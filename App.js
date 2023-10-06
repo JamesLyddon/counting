@@ -3,9 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 // TODO
-// Sort layout
-// Make fixed landscape orientation
-// have the result include small emojiis too (as a tally)
+// make gird or wrap display (3 x 3)
+// make success overlay
 // Implement refresh button
 // Try to refactor (useContext or useRef?...)
 // Add confetti
@@ -39,20 +38,20 @@ export default function App() {
   }, [total])
 
   return (
-    <View style={styles.container}>
-      <CountElement num={numbers[0]} setTotal={setTotal}/>
-      <Text style={styles.text}>+</Text>
-      <CountElement num={numbers[1]} setTotal={setTotal}/>
-      <Text style={styles.text}>=</Text>
-      <Text style={styles.text}>{total}</Text>
-      {winner ? <Text style={styles.text}>You did it!</Text> : <Text></Text>}
-    </View>
+    <>
+      <View style={styles.container}>
+        <CountElement num={numbers[0]} setTotal={setTotal}/>
+        <Text style={styles.text}>+</Text>
+        <CountElement num={numbers[1]} setTotal={setTotal}/>
+        <Text style={styles.text}>=</Text>
+        <ResultElement num={total}/>
+      </View>
+    </>
   )
 };
 
 function CountElement({num, setTotal}) {
   const [count, setCount] = useState(0)
-
 
   const displayBananas = (number) => {
     const bananas = []
@@ -65,8 +64,30 @@ function CountElement({num, setTotal}) {
 
   return (
     <View>
-      {displayBananas(num)}
-      <Text style={styles.text}>{count}</Text>
+      <View style={styles.countElementBananas}>
+        {displayBananas(num)}
+      </View>
+      <Text style={styles.text}>{count > 0 ? count : ""}</Text>
+    </View>
+  );
+}
+
+function ResultElement({num}) {
+  const displayBananas = (number) => {
+    bananas = []
+    while(number > 0) {
+      bananas.push(<Text style={styles.banana}>🍌</Text>)
+      number--
+    }
+    return bananas
+  }
+
+  return (
+    <View>
+      <View style={styles.countElementBananas}>
+        {displayBananas(num)}
+      </View>
+      <Text style={num > 0 ? styles.text : {opacity: 0}}>{num}</Text>
     </View>
   );
 }
@@ -86,29 +107,40 @@ function Banana({setCount, setTotal}) {
   }
   
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Text style={touched ? [styles.text, styles.highlight] : styles.text}>🍌</Text>
-    </TouchableOpacity>
+    <View style={styles.banana}>
+      <TouchableOpacity style={styles.touchOp} onPress={onPress}>
+        <Text style={touched ? [styles.banana, styles.highlight] : styles.banana}>🍌</Text>
+      </TouchableOpacity>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  countElementBananas: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 80
+  },
+  banana: {
+    fontSize: 40,
   },
   text: {
     fontSize: 40,
-  },
-  redBG: {
-    backgroundColor: 'red',
-  },
-  blueBG: {
-    backgroundColor: 'blue'
+    alignSelf: 'center',
+    margin: 10,
+    color: 'rgba(0,0,0,0.6)'
   },
   highlight: {
     textShadowColor: '#3e3e3e',
     textShadowOffset: {width: 7, height: 3},
     textShadowRadius: 1
-  }
+  },
+
 });
